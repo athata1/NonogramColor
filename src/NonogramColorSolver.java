@@ -439,8 +439,8 @@ public class NonogramColorSolver {
             }
             if (output[r][output[0].length - 1] != '_') {
                 RuleData rd = rowRules.get(r);
-                int numData = rd.getNumRule()[0];
-                char color = rd.getColorRule()[0];
+                int numData = rd.getNumRule()[rd.getNumRule().length - 1];
+                char color = rd.getColorRule()[rd.getColorRule().length - 1];
                 for (int c = 0; c < numData; c++) {
                     output[r][output[0].length - 1 - c] = color;
                 }
@@ -449,7 +449,7 @@ public class NonogramColorSolver {
 
         for (int c = 0; c < output[0].length; c++) {
             if (output[0][c] != '_') {
-                RuleData rd = rowRules.get(c);
+                RuleData rd = colRules.get(c);
                 int numData = rd.getNumRule()[0];
                 char color = rd.getColorRule()[0];
                 for (int r = 0; r < numData; r++) {
@@ -457,9 +457,10 @@ public class NonogramColorSolver {
                 }
             }
             if (output[output.length - 1][c] != '_') {
-                RuleData rd = rowRules.get(c);
-                int numData = rd.getNumRule()[0];
-                char color = rd.getColorRule()[0];
+                RuleData rd = colRules.get(c);
+                int numData = rd.getNumRule()[rd.getNumRule().length - 1];
+                char color = rd.getColorRule()[rd.getColorRule().length - 1];
+                System.out.println(c + " " + numData + " " + color);
                 for (int r = 0; r < numData; r++) {
                     output[output.length - 1 - r][c] = color;
                 }
