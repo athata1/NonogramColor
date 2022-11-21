@@ -91,6 +91,7 @@ public class NonogramColorSolver {
     private void runThroughFirstBoard() {
         runRule1();
         runRule2();
+        runRule3();
     }
 
     /**
@@ -301,7 +302,6 @@ public class NonogramColorSolver {
 
         for (int i = 0; i < colRules.size(); i++) {
             RuleData rd = colRules.get(i);
-            System.out.println(rd);
             int[] numRule = rd.getNumRule();
             char[] colorRule = rd.getColorRule();
 
@@ -422,6 +422,46 @@ public class NonogramColorSolver {
                 }
                 else if (temp2[r][c] != ' ') {
                     output[r][c] = temp2[r][c];
+                }
+            }
+        }
+    }
+
+    public void runRule3() {
+        for (int r = 0; r < output.length; r++) {
+            if (output[r][0] != '_') {
+                RuleData rd = rowRules.get(r);
+                int numData = rd.getNumRule()[0];
+                char color = rd.getColorRule()[0];
+                for (int c = 0; c < numData; c++) {
+                    output[r][c] = color;
+                }
+            }
+            if (output[r][output[0].length - 1] != '_') {
+                RuleData rd = rowRules.get(r);
+                int numData = rd.getNumRule()[0];
+                char color = rd.getColorRule()[0];
+                for (int c = 0; c < numData; c++) {
+                    output[r][output[0].length - 1 - c] = color;
+                }
+            }
+        }
+
+        for (int c = 0; c < output[0].length; c++) {
+            if (output[0][c] != '_') {
+                RuleData rd = rowRules.get(c);
+                int numData = rd.getNumRule()[0];
+                char color = rd.getColorRule()[0];
+                for (int r = 0; r < numData; r++) {
+                    output[r][c] = color;
+                }
+            }
+            if (output[output.length - 1][c] != '_') {
+                RuleData rd = rowRules.get(c);
+                int numData = rd.getNumRule()[0];
+                char color = rd.getColorRule()[0];
+                for (int r = 0; r < numData; r++) {
+                    output[output.length - 1 - r][c] = color;
                 }
             }
         }
