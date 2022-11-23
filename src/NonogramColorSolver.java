@@ -81,9 +81,24 @@ public class NonogramColorSolver {
     public char[][] solveNonogram() {
 
         runThroughFirstBoard();
+        char[][] prev = output;
+        while (true) {
+
+            if (prevEqualsBoard(prev))
+                break;
+        }
         return output;
     }
 
+    private boolean prevEqualsBoard(char[][] prev) {
+        for (int r = 0; r < prev.length; r++) {
+            for (int c = 0; c < prev[r].length; c++) {
+                if (prev[r][c] != output[r][c])
+                    return false;
+            }
+        }
+        return true;
+    }
     /**
      * This function acts as a preprocessor that finds as many guaranteed board states as
      * possible before running the main portion of the algorithm
