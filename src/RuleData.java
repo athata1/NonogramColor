@@ -4,11 +4,15 @@ public class RuleData {
 
     private int[] numRule;
     private char[] colorRule;
+    private int startIndex;
+    private int endIndex;
     private int start;
     private int end;
     public RuleData(String[] arr, int length) {
-        start = 0;
-        end = length - 1;
+        startIndex = 0;
+        endIndex = arr.length - 1;
+        this.start = 0;
+        this.end = length - 1;
         int size = arr.length/2;
         this.numRule = new int[size];
         this.colorRule = new char[size];
@@ -29,6 +33,38 @@ public class RuleData {
 
     public int getStart() {
         return start;
+    }
+
+    public void setNumRule(int[] numRule) {
+        this.numRule = numRule;
+    }
+
+    public void setColorRule(char[] colorRule) {
+        this.colorRule = colorRule;
+    }
+
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    public void setEndIndex(int endIndex) {
+        this.endIndex = endIndex;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
+    }
+
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    public int getEndIndex() {
+        return endIndex;
     }
 
     public int getEnd() {
