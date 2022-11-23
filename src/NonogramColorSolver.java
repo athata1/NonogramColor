@@ -83,11 +83,80 @@ public class NonogramColorSolver {
         runThroughFirstBoard();
         char[][] prev = output;
         while (true) {
-
+            updateRuleData();
+            for (RuleData rd: rowRules) {
+                System.out.println(rd.getStartIndex());
+            }
             if (prevEqualsBoard(prev))
                 break;
         }
         return output;
+    }
+
+    /**
+     * Updates all rule data to new output standards
+     * Changes the start, end, start index, and end index
+     */
+    private void updateRuleData() {
+        for (int i = 0; i < rowRules.size(); i++) {
+            updateRule(rowRules.get(i), i, true);
+        }
+
+        for (int i = 0; i < colRules.size(); i++) {
+            updateRule(colRules.get(i), i, false);
+        }
+    }
+
+    /**
+     * helper function for updateRuleData to update individual rules at a time
+     * @param rd ruleData being analyzed
+     * @param index rule index on board
+     * @param isRow true = row Rule, false = col Rule
+     */
+    private void updateRule(RuleData rd, int index, boolean isRow) {
+        int limit = (isRow) ? output[0].length: output.length;
+
+        int[] numRules = rd.getNumRule();
+        char[] colorRules = rd.getColorRule();
+        int startIndex = 0;
+        for (int i = 0; i < limit; i++) {
+            if (isRow) {
+                if (output[index][i] == '_') {
+                    rd.setStart(i);
+                    break;
+                }
+                else if (output[index][i] == colorRules[startIndex]) {
+                    for (int j = 0; j < numRules[startIndex]; j++) {
+                        output[index][i + j] = colorRules[startIndex];
+                    }
+                    if (startIndex + 1 < colorRules.length && colorRules[startIndex] == colorRules[startIndex + 1]) {
+                        i++;
+                        output[index][i + numRules[startIndex]] = 'X';
+                    }
+                    i += numRules[startIndex] - 1;
+                    startIndex++;
+                    rd.setStartIndex(startIndex);
+                }
+            }
+            else {
+                if (output[i][index] == '_') {
+                    rd.setStart(i);
+                    break;
+                }
+                else if (output[index][i] == colorRules[startIndex]) {
+                    for (int j = 0; j < numRules[startIndex]; j++) {
+                        output[i + j][index] = colorRules[startIndex];
+                    }
+                    if (startIndex + 1 < colorRules.length && colorRules[startIndex] == colorRules[startIndex + 1]) {
+                        i++;
+                        output[i + numRules[startIndex]][index] = 'X';
+                    }
+                    i += numRules[startIndex] - 1;
+                    startIndex++;
+                    rd.setStartIndex(startIndex);
+                }
+            }
+        }
     }
 
     private boolean prevEqualsBoard(char[][] prev) {
@@ -475,7 +544,6 @@ public class NonogramColorSolver {
                 RuleData rd = colRules.get(c);
                 int numData = rd.getNumRule()[rd.getNumRule().length - 1];
                 char color = rd.getColorRule()[rd.getColorRule().length - 1];
-                System.out.println(c + " " + numData + " " + color);
                 for (int r = 0; r < numData; r++) {
                     output[output.length - 1 - r][c] = color;
                 }
