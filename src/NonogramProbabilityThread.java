@@ -27,6 +27,8 @@ public class NonogramProbabilityThread implements Runnable{
         if (rd.getNumRule()[0] == 0) {
             return;
         }
+        if (rd.getStart() > rd.getEnd())
+            return;
         findProb(rd.getStartIndex(), rd.getStart(), new ArrayList<Integer>());
         for (int i = 0; i < arr.length; i++) {
             if (arr[i] != '_')
@@ -57,21 +59,20 @@ public class NonogramProbabilityThread implements Runnable{
         if (ruleIndex == numRule.length) {
             char[] temp = new char[arr.length];
             Arrays.fill(temp, 'X');
-            for (int i = 0; i < numRule.length; i++) {
+
+            for (int i = rd.getStartIndex(); i < numRule.length; i++) {
                 for (int j = 0; j < numRule[i]; j++) {
                     temp[j + indexes.get(i)] = colorRule[i];
                 }
             }
-            System.out.println(Arrays.toString(temp));
+
             for (int i = 0; i < arr.length; i++) {
                 if (arr[i] == '_')
                     continue;
-                else if (arr[i] == 'X' && temp[i] == 'X')
-                    continue;
-                else if (arr[i] != 'X' && temp[i] != 'X' && arr[i] == temp[i])
+                if (arr[i] == temp[i])
                     continue;
                 else
-                    break;
+                    return;
             }
             total++;
             for (int i = 0; i < temp.length; i++) {

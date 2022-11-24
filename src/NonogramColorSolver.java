@@ -84,10 +84,40 @@ public class NonogramColorSolver {
         char[][] prev = output;
         while (true) {
             updateRuleData();
+            determineNonogram();
             if (prevEqualsBoard(prev))
                 break;
         }
         return output;
+    }
+
+    /**
+     * This method utilizes the Nonogram Probability Thread to find more positions than the preprocessor can
+     */
+    private void determineNonogram() {
+
+        //Rows
+        for (int row = 0; row < output.length; row++) {
+            char[] temp = new char[output[0].length];
+            for (int j = 0; j < temp.length; j++) {
+                temp[j] = output[row][j];
+            }
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap);
+            Thread th = new Thread(npt);
+            th.start();
+            try {
+                th.join();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            temp = npt.getArr();
+            for (int j = 0; j < temp.length; j++) {
+                if (temp[j] != '_') {
+                    output[row][j] = temp[j];
+                }
+            }
+        }
     }
 
     /**
