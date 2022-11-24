@@ -84,9 +84,6 @@ public class NonogramColorSolver {
         char[][] prev = output;
         while (true) {
             updateRuleData();
-            for (RuleData rd: rowRules) {
-                System.out.println(rd.getStartIndex());
-            }
             if (prevEqualsBoard(prev))
                 break;
         }
@@ -119,12 +116,15 @@ public class NonogramColorSolver {
         int[] numRules = rd.getNumRule();
         char[] colorRules = rd.getColorRule();
         int startIndex = 0;
+
+        //Update start and startIndex by iterating from left -> right and up -> down
         for (int i = 0; i < limit; i++) {
             if (isRow) {
+                //If data is blank, nothing further can be done
                 if (output[index][i] == '_') {
                     rd.setStart(i);
                     break;
-                }
+                } //If data equals currentColor rule, add full rule and increment startIndex
                 else if (output[index][i] == colorRules[startIndex]) {
                     for (int j = 0; j < numRules[startIndex]; j++) {
                         output[index][i + j] = colorRules[startIndex];
@@ -143,7 +143,7 @@ public class NonogramColorSolver {
                     rd.setStart(i);
                     break;
                 }
-                else if (output[index][i] == colorRules[startIndex]) {
+                else if (output[i][index] == colorRules[startIndex]) {
                     for (int j = 0; j < numRules[startIndex]; j++) {
                         output[i + j][index] = colorRules[startIndex];
                     }
@@ -154,6 +154,46 @@ public class NonogramColorSolver {
                     i += numRules[startIndex] - 1;
                     startIndex++;
                     rd.setStartIndex(startIndex);
+                }
+            }
+        }
+
+        int endIndex = colorRules.length - 1;
+        //Update end and endIndex by iterating from right -> left and down -> up
+        for (int i = limit - 1; i >= 0; i--) {
+            if (isRow) {
+                if (output[index][i] == '_') {
+                    rd.setEnd(i);
+                    break;
+                }
+                else if (output[index][i] == colorRules[endIndex]) {
+                    for (int j = 0; j < numRules[endIndex]; j++) {
+                        output[index][i--] = colorRules[endIndex];
+                    }
+                    if (endIndex - 1 >= 0 && colorRules[endIndex] == colorRules[endIndex - 1]) {
+                        output[index][i--] = 'X';
+                    }
+                    i++;
+                    endIndex--;
+                    rd.setEndIndex(endIndex);
+
+                }
+            }
+            else {
+                if (output[i][index] == '_') {
+                    rd.setEnd(i);
+                    break;
+                }
+                else if (output[i][index] == colorRules[endIndex]) {
+                    for (int j = 0; j < numRules[endIndex]; j++) {
+                        output[i--][index] = colorRules[endIndex];
+                    }
+                    if (endIndex - 1 >= 0 && colorRules[endIndex] == colorRules[endIndex - 1]) {
+                        output[index][i--] = 'X';
+                    }
+                    i++;
+                    endIndex--;
+                    rd.setEndIndex(endIndex);
                 }
             }
         }
