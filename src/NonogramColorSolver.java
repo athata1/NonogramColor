@@ -81,14 +81,26 @@ public class NonogramColorSolver {
     public char[][] solveNonogram() {
 
         runThroughFirstBoard();
-        char[][] prev = output;
+        printCurrentBoard();
+        System.out.println();
         while (true) {
-            updateRuleData();
+            char[][] prev = copyOfBoard(output);
+            //updateRuleData();
             determineNonogram();
             if (prevEqualsBoard(prev))
                 break;
         }
         return output;
+    }
+
+    private char[][] copyOfBoard(char[][] board) {
+        char[][] out = new char[board.length][board[0].length];
+        for (int r = 0; r < board.length; r++) {
+            for (int c = 0; c < board[r].length; c++) {
+                out[r][c] = board[r][c];
+            }
+        }
+        return out;
     }
 
     /**
@@ -118,6 +130,29 @@ public class NonogramColorSolver {
                 }
             }
         }
+
+        //Col
+        for (int i = 0; i < output[0].length; i++) {
+            char[] temp = new char[output.length];
+            for (int j = 0; j < output.length; j++) {
+                temp[j] = output[j][i];
+            }
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap);
+            Thread th = new Thread(npt);
+            th.start();
+            try {
+                th.join();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            temp = npt.getArr();
+            for (int j = 0; j < temp.length; j++) {
+                if (temp[j] != '_') {
+                    output[j][i] = temp[j];
+                }
+            }
+        }
     }
 
     /**
@@ -141,6 +176,8 @@ public class NonogramColorSolver {
      * @param isRow true = row Rule, false = col Rule
      */
     private void updateRule(RuleData rd, int index, boolean isRow) {
+        if (rd.getStartIndex() > rd.getEndIndex())
+            return;
         int limit = (isRow) ? output[0].length: output.length;
 
         int[] numRules = rd.getNumRule();
@@ -149,8 +186,11 @@ public class NonogramColorSolver {
 
         //Update start and startIndex by iterating from left -> right and up -> down
         for (int i = 0; i < limit; i++) {
+            if (startIndex == numRules.length)
+                break;
             if (isRow) {
                 //If data is blank, nothing further can be done
+                System.out.println(startIndex + " " + colorRules.length);
                 if (output[index][i] == '_') {
                     rd.setStart(i);
                     break;
@@ -348,6 +388,8 @@ public class NonogramColorSolver {
             }
 
             int spacesPerGap = spacesLeft / (numRule.length - 1);
+            if (spacesPerGap == 0)
+                continue;
             int remainder = spacesLeft % (numRule.length - 1);
             int placeholderRemainder = remainder;
 
@@ -368,14 +410,13 @@ public class NonogramColorSolver {
             remainder = placeholderRemainder;
 
             //Find difference value of rules array
-            //Difference value is sum or rules + 1 if two same colors are sdjacent
+            //Difference value is sum or rules + 1 if two same colors are adjacent
             int diff = 0;
             for (int j = 1; j < numRule.length; j++) {
                 if (colorRule[j] == colorRule[j - 1]) {
                     diff++;
                 }
             }
-
             //Simplified version of output[0].length - (output[0].length - spacesLeft + total)
             diff = spacesLeft - diff;
 
@@ -434,7 +475,7 @@ public class NonogramColorSolver {
                 //for (int j = 0; j < numRule[c] - diff; j++) {
                   //  index--;
                 //}
-                index -= numRule[c] - diff;
+                index -= numRule[c] - diff - diff % 2;
                 for (int j = 0; j < secondHalf; j++) {
                     temp1[i][index] = ' ';
                     index--;
@@ -452,120 +493,6 @@ public class NonogramColorSolver {
         for (int r = 0; r < temp2.length; r++)
         {
             Arrays.fill(temp2[r], ' ');
-        }
-
-        for (int i = 0; i < colRules.size(); i++) {
-            RuleData rd = colRules.get(i);
-            int[] numRule = rd.getNumRule();
-            char[] colorRule = rd.getColorRule();
-
-            if (numRule.length == 1)
-                continue;
-
-            int spacesLeft = output.length;
-            for (int j = 0; j < numRule.length; j++) {
-                spacesLeft -= numRule[j];
-            }
-
-            int spacesPerGap = spacesLeft / (numRule.length - 1);
-            int remainder = spacesLeft % (numRule.length - 1);
-            int placeholderRemainder = remainder;
-
-            //Input rule sequence as evenly separated as possible
-            int index = output.length - 1;
-            for (int c = numRule.length - 1; c >= 0; c--) {
-                for (int j = 0; j < numRule[c]; j++) {
-                    temp2[index][i] = colorRule[c];
-                    index--;
-                }
-                index -= spacesPerGap;
-                if (remainder != 0) {
-                    remainder--;
-                    index--;
-                }
-            }
-
-            remainder = placeholderRemainder;
-
-            //Find difference value of rules array
-            //Difference value is sum or rules + 1 if two same colors are sdjacent
-            int diff = 0;
-            for (int j = 1; j < numRule.length; j++) {
-                if (colorRule[j] == colorRule[j - 1]) {
-                    diff++;
-                }
-            }
-
-            //Simplified version of output[0].length - (output[0].length - spacesLeft + total)
-            diff = spacesLeft - diff;
-
-            index = output.length - 1;
-            for (int c = numRule.length - 1; c >= 0; c--) {
-                //If diff > current rule, remove all data in temp for this rule
-                if (diff > numRule[c]) {
-                    for (int j = 0; j < numRule[c]; j++) {
-                        temp2[index][i] = ' ';
-                        index--;
-                    }
-                    index -= spacesPerGap;
-                    if (remainder != 0) {
-                        remainder--;
-                        index--;
-                    }
-                    continue;
-                }
-
-                //Bound check for last rule
-                if (c == numRule.length - 1) {
-                    for (int j = 0; j < diff; j++) {
-                        temp2[index][i] = ' ';
-                        index--;
-                    }
-
-                    //for (int j = 0; j < numRule[c] - diff; j++) {
-                      //  index--;
-                    //}
-
-                    index -= numRule[c] - diff;
-
-                    index -= spacesPerGap;
-                    if (remainder != 0) {
-                        remainder--;
-                        index--;
-                    }
-                    continue;
-                }
-
-                //Bound check for first rule in list
-                if (c == 0) {
-                    for (int j = 0; j < diff; j++) {
-                        temp2[j][i] = ' ';
-                    }
-                    continue;
-                }
-
-                //Rule is in the middle of the field
-                int firstHalf = diff / 2;
-                int secondHalf = diff / 2 + diff % 2;
-                for (int j = 0; j < firstHalf; j++) {
-                    temp2[index][i] = ' ';
-                    index--;
-                }
-
-                //for (int j = 0; j < numRule[c] - diff; j++) {
-                  //  index--;
-                //}
-                index -= numRule[c] - diff;
-                for (int j = 0; j < secondHalf; j++) {
-                    temp2[index][i] = ' ';
-                    index--;
-                }
-                index -= spacesPerGap;
-                if (remainder != 0) {
-                    remainder--;
-                    index--;
-                }
-            }
         }
 
         //Find all newfound values into output and determine if valid

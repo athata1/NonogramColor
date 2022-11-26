@@ -42,6 +42,10 @@ public class NonogramProbabilityThread implements Runnable{
                 }
                 else if (counter == total) {
                     arr[i] = entry.getKey();
+                    break;
+                }
+                else {
+                    break;
                 }
             }
             if (countZeroes == prob.size()) {
@@ -60,9 +64,12 @@ public class NonogramProbabilityThread implements Runnable{
             char[] temp = new char[arr.length];
             Arrays.fill(temp, 'X');
 
+            for (int i = 0; i < rd.getStart(); i++) {
+                temp[i] = arr[i];
+            }
             for (int i = rd.getStartIndex(); i < numRule.length; i++) {
                 for (int j = 0; j < numRule[i]; j++) {
-                    temp[j + indexes.get(i)] = colorRule[i];
+                    temp[j + indexes.get(i - rd.getStartIndex())] = colorRule[i];
                 }
             }
 
@@ -75,6 +82,7 @@ public class NonogramProbabilityThread implements Runnable{
                     return;
             }
             total++;
+            //System.out.println(Arrays.toString(temp));
             for (int i = 0; i < temp.length; i++) {
                 if (temp[i] == 'X')
                     continue;
