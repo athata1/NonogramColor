@@ -85,7 +85,7 @@ public class NonogramColorSolver {
         System.out.println();
         while (true) {
             char[][] prev = copyOfBoard(output);
-            //updateRuleData();
+            updateRuleData();
             determineNonogram();
             if (prevEqualsBoard(prev))
                 break;
@@ -190,7 +190,6 @@ public class NonogramColorSolver {
                 break;
             if (isRow) {
                 //If data is blank, nothing further can be done
-                System.out.println(startIndex + " " + colorRules.length);
                 if (output[index][i] == '_') {
                     rd.setStart(i);
                     break;
@@ -236,6 +235,9 @@ public class NonogramColorSolver {
                     rd.setEnd(i);
                     break;
                 }
+                else if (output[index][i] == 'X') {
+                    continue;
+                }
                 else if (output[index][i] == colorRules[endIndex]) {
                     for (int j = 0; j < numRules[endIndex]; j++) {
                         output[index][i--] = colorRules[endIndex];
@@ -253,6 +255,9 @@ public class NonogramColorSolver {
                 if (output[i][index] == '_') {
                     rd.setEnd(i);
                     break;
+                }
+                else if (output[i][index] == 'X') {
+                    continue;
                 }
                 else if (output[i][index] == colorRules[endIndex]) {
                     for (int j = 0; j < numRules[endIndex]; j++) {
@@ -284,7 +289,7 @@ public class NonogramColorSolver {
      */
     private void runThroughFirstBoard() {
         runRule1();
-        runRule2();
+        //runRule2();
         runRule3();
     }
 
