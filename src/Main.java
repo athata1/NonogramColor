@@ -1,14 +1,18 @@
 public class Main {
     public static void main(String[] args) {
 
-        /*while (true) {
+        /*long sum = 0;
+        int total = 100;
+        for (int i = 0; i < total; i++) {
             long a = System.currentTimeMillis();
             NonogramColorSolver n = new NonogramColorSolver("Nonogram3");
             n.solveNonogram();
-            System.out.println(System.currentTimeMillis() - a);
-        }*/
+            sum += System.currentTimeMillis() - a;
+            System.out.println(i);
+        }
+        System.out.println((double)sum/total);*/
 
-        NonogramColorSolver n = new NonogramColorSolver("Nonogram2");
+        NonogramColorSolver n = new NonogramColorSolver("Nonogram3");
         n.solveNonogram();
         n.printCurrentBoard();
     }
