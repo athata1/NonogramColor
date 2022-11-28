@@ -30,7 +30,7 @@ public class NonogramProbabilityThread implements Runnable{
         if (rd.getStart() > rd.getEnd())
             return;
         findProb(rd.getStartIndex(), rd.getStart(), new ArrayList<Integer>());
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
             if (arr[i] != '_')
                 continue;
 
@@ -87,7 +87,7 @@ public class NonogramProbabilityThread implements Runnable{
             }
 
 
-            for (int i = 0; i < arr.length; i++) {
+            for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
                 if (arr[i] == '_')
                     continue;
                 if (arr[i] == temp[i])
@@ -97,7 +97,7 @@ public class NonogramProbabilityThread implements Runnable{
             }
             total++;
             //System.out.println(Arrays.toString(temp));
-            for (int i = 0; i < temp.length; i++) {
+            for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
                 if (temp[i] == 'X')
                     continue;
 
