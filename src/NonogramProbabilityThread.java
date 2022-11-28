@@ -25,12 +25,17 @@ public class NonogramProbabilityThread implements Runnable{
 
     public void run() {
         if (rd.getNumRule()[0] == 0) {
+            Arrays.fill(arr, 'X');
             return;
         }
         if (rd.getStart() > rd.getEnd())
             return;
+        if (rd.getStartIndex() > rd.getEndIndex())
+            return;
         findProb(rd.getStartIndex(), rd.getStart(), new ArrayList<Integer>());
-        for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
+        int start = rd.getStart();
+        int end = rd.getEnd();
+        for (int i = start; i <= end; i++) {
             if (arr[i] != '_')
                 continue;
 
@@ -60,7 +65,7 @@ public class NonogramProbabilityThread implements Runnable{
         int[] numRule = rd.getNumRule();
         char[] colorRule = rd.getColorRule();
 
-        if (ruleIndex == numRule.length) {
+        if (ruleIndex == rd.getEndIndex() + 1) {
             char[] temp = new char[arr.length];
             Arrays.fill(temp, 'X');
 
@@ -73,21 +78,18 @@ public class NonogramProbabilityThread implements Runnable{
                 }
             }*/
 
-            for (int i = 0; i < rd.getStart(); i++) {
-                temp[i] = arr[i];
-            }
-            for (int i = rd.getStartIndex(); i <= rd.getEndIndex(); i++) {
+
+            int startIndex = rd.getStartIndex();
+            int endIndex = rd.getEndIndex();
+            for (int i = startIndex; i <= endIndex; i++) {
                 for (int j = 0; j < numRule[i]; j++) {
                     temp[j + indexes.get(i - rd.getStartIndex())] = colorRule[i];
                 }
             }
 
-            for (int i = rd.getEnd() + 1; i < arr.length; i++) {
-                temp[i] = arr[i];
-            }
-
-
-            for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
+            int start = rd.getStart();
+            int end = rd.getEnd();
+            for (int i = start; i <= end; i++) {
                 if (arr[i] == '_')
                     continue;
                 if (arr[i] == temp[i])
@@ -97,7 +99,7 @@ public class NonogramProbabilityThread implements Runnable{
             }
             total++;
             //System.out.println(Arrays.toString(temp));
-            for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
+            for (int i = start; i <= end; i++) {
                 if (temp[i] == 'X')
                     continue;
 
@@ -108,7 +110,7 @@ public class NonogramProbabilityThread implements Runnable{
 
         //Get total length of string
         int length = numRule[ruleIndex];
-        for (int i = ruleIndex + 1; i < numRule.length; i++) {
+        for (int i = ruleIndex + 1; i <= rd.getEndIndex(); i++) {
             length += numRule[i];
             if (colorRule[i] == colorRule[i - 1])
                 length += 1;
