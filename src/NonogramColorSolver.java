@@ -213,7 +213,7 @@ public class NonogramColorSolver {
                     rd.setStart(i);
                     break;
                 }
-                else if (output[index][i] == 'X') {
+                else if (output[i][index] == 'X') {
                     continue;
                 }
                 else if (output[i][index] == colorRules[startIndex]) {
