@@ -186,14 +186,15 @@ public class NonogramColorSolver {
 
         //Update start and startIndex by iterating from left -> right and up -> down
         for (int i = 0; i < limit; i++) {
-            if (startIndex == numRules.length)
-                break;
             if (isRow) {
                 //If data is blank, nothing further can be done
                 if (output[index][i] == '_') {
                     rd.setStart(i);
                     break;
-                } //If data equals currentColor rule, add full rule and increment startIndex
+                }
+                else if (output[index][i] == 'X') {
+                    continue;
+                }//If data equals currentColor rule, add full rule and increment startIndex
                 else if (output[index][i] == colorRules[startIndex]) {
                     for (int j = 0; j < numRules[startIndex]; j++) {
                         output[index][i + j] = colorRules[startIndex];
@@ -211,6 +212,9 @@ public class NonogramColorSolver {
                 if (output[i][index] == '_') {
                     rd.setStart(i);
                     break;
+                }
+                else if (output[index][i] == 'X') {
+                    continue;
                 }
                 else if (output[i][index] == colorRules[startIndex]) {
                     for (int j = 0; j < numRules[startIndex]; j++) {

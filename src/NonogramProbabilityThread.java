@@ -67,10 +67,14 @@ public class NonogramProbabilityThread implements Runnable{
             for (int i = 0; i < rd.getStart(); i++) {
                 temp[i] = arr[i];
             }
-            for (int i = rd.getStartIndex(); i < numRule.length; i++) {
+            for (int i = rd.getStartIndex(); i <= rd.getEndIndex(); i++) {
                 for (int j = 0; j < numRule[i]; j++) {
                     temp[j + indexes.get(i - rd.getStartIndex())] = colorRule[i];
                 }
+            }
+
+            for (int i = rd.getEnd() + 1; i < arr.length; i++) {
+                temp[i] = arr[i];
             }
 
             for (int i = 0; i < arr.length; i++) {

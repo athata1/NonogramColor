@@ -10,10 +10,10 @@ public class RuleData {
     private int end;
     public RuleData(String[] arr, int length) {
         startIndex = 0;
-        endIndex = arr.length - 1;
         this.start = 0;
         this.end = length - 1;
         int size = arr.length/2;
+        endIndex = size - 1;
         this.numRule = new int[size];
         this.colorRule = new char[size];
 
