@@ -1,4 +1,6 @@
+import java.awt.*;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class RuleData {
 
@@ -8,7 +10,12 @@ public class RuleData {
     private int endIndex;
     private int start;
     private int end;
-    public RuleData(String[] arr, int length) {
+    private HashMap<Character, int[]> instanceMap;
+    public RuleData(String[] arr, int length, HashMap<Character, Color> map) {
+        this.instanceMap = new HashMap<>();
+        for (Character color: map.keySet()) {
+            instanceMap.put(color, new int[]{-1,-1});
+        }
         startIndex = 0;
         this.start = 0;
         this.end = length - 1;
@@ -33,6 +40,20 @@ public class RuleData {
 
     public int getStart() {
         return start;
+    }
+
+    public void getColorIndexes() {
+        int index = start;
+        for (int i = startIndex; i <= endIndex; i++) {
+            instanceMap.get(colorRule[i])[0] = index;
+            index += numRule[i];
+        }
+
+        index = end;
+        for (int i = endIndex; i >= start; i--) {
+            instanceMap.get(colorRule[i])[1] = index;
+            index -= numRule[i];
+        }
     }
 
     public void setNumRule(int[] numRule) {
