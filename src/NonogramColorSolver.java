@@ -54,7 +54,7 @@ public class NonogramColorSolver {
             }
             for (int i = 0; i < numRows; i++) {
                 String[] data = scan.nextLine().split(" ");
-                rowRules.add(new RuleData(data,numCols));
+                rowRules.add(new RuleData(data,numCols, charMap));
             }
 
             //Ensure that row file was properly created
@@ -63,7 +63,7 @@ public class NonogramColorSolver {
 
             for (int i = 0; i < numCols; i++) {
                 String[] data = scan.nextLine().split(" ");
-                colRules.add(new RuleData(data, numRows));
+                colRules.add(new RuleData(data, numRows, charMap));
             }
 
             //Ensure that file ends at column data
@@ -89,6 +89,8 @@ public class NonogramColorSolver {
             determineNonogram();
             if (prevEqualsBoard(prev))
                 break;
+            printCurrentBoard();
+            System.out.println();
         }
         return output;
     }
@@ -114,7 +116,7 @@ public class NonogramColorSolver {
             for (int j = 0; j < temp.length; j++) {
                 temp[j] = output[row][j];
             }
-            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap);
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row);
             Thread th = new Thread(npt);
             th.start();
             try {
@@ -137,7 +139,7 @@ public class NonogramColorSolver {
             for (int j = 0; j < output.length; j++) {
                 temp[j] = output[j][i];
             }
-            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap);
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i);
             Thread th = new Thread(npt);
             th.start();
             try {
@@ -197,13 +199,12 @@ public class NonogramColorSolver {
                 }//If data equals currentColor rule, add full rule and increment startIndex
                 else if (output[index][i] == colorRules[startIndex]) {
                     for (int j = 0; j < numRules[startIndex]; j++) {
-                        output[index][i + j] = colorRules[startIndex];
+                        output[index][i++] = colorRules[startIndex];
                     }
                     if (startIndex + 1 < colorRules.length && colorRules[startIndex] == colorRules[startIndex + 1]) {
-                        i++;
-                        output[index][i + numRules[startIndex]] = 'X';
+                        output[index][i++] = 'X';
                     }
-                    i += numRules[startIndex] - 1;
+                    i--;
                     startIndex++;
                     rd.setStartIndex(startIndex);
                 }
@@ -218,13 +219,12 @@ public class NonogramColorSolver {
                 }
                 else if (output[i][index] == colorRules[startIndex]) {
                     for (int j = 0; j < numRules[startIndex]; j++) {
-                        output[i + j][index] = colorRules[startIndex];
+                        output[i++][index] = colorRules[startIndex];
                     }
                     if (startIndex + 1 < colorRules.length && colorRules[startIndex] == colorRules[startIndex + 1]) {
-                        i++;
-                        output[i + numRules[startIndex]][index] = 'X';
+                        output[i++][index] = 'X';
                     }
-                    i += numRules[startIndex] - 1;
+                    i--;
                     startIndex++;
                     rd.setStartIndex(startIndex);
                 }
@@ -268,7 +268,7 @@ public class NonogramColorSolver {
                         output[i--][index] = colorRules[endIndex];
                     }
                     if (endIndex - 1 >= 0 && colorRules[endIndex] == colorRules[endIndex - 1]) {
-                        output[index][i--] = 'X';
+                        output[i--][index] = 'X';
                     }
                     i++;
                     endIndex--;

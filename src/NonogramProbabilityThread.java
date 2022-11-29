@@ -12,11 +12,15 @@ public class NonogramProbabilityThread implements Runnable{
     private HashMap<Character, int[]> prob;
     private HashMap<Character, Color> map;
     private int total;
-    public NonogramProbabilityThread(RuleData rd, char[] arr, HashMap<Character, Color> map) {
+    private ArrayList<RuleData> perpRules;
+    private int currIndex;
+    public NonogramProbabilityThread(RuleData rd, char[] arr, HashMap<Character, Color> map, ArrayList<RuleData> rowRule, int currIndex) {
+        this.currIndex = currIndex;
         this.rd = rd;
         this.arr = arr;
         this.map = map;
         this.prob = new HashMap<>();
+        this.perpRules = rowRule;
         for (Map.Entry<Character, Color> entry: map.entrySet()) {
             prob.put(entry.getKey(), new int[arr.length]);
         }
@@ -30,8 +34,7 @@ public class NonogramProbabilityThread implements Runnable{
         }
         if (rd.getStart() > rd.getEnd())
             return;
-        if (rd.getStartIndex() > rd.getEndIndex())
-            return;
+
         findProb(rd.getStartIndex(), rd.getStart(), new ArrayList<Integer>());
         int start = rd.getStart();
         int end = rd.getEnd();
@@ -108,6 +111,9 @@ public class NonogramProbabilityThread implements Runnable{
             return;
         }
 
+        if (ruleIndex == numRule.length)
+            return;
+
         //Get total length of string
         int length = numRule[ruleIndex];
         for (int i = ruleIndex + 1; i <= rd.getEndIndex(); i++) {
@@ -117,6 +123,27 @@ public class NonogramProbabilityThread implements Runnable{
         }
 
         for (int i = arrIndex; i < arr.length - length + 1; i++) {
+
+
+            boolean continueFlag = false;
+            for (int j = 0; j < numRule[ruleIndex]; j++) {
+                RuleData perpendicularRule = perpRules.get(i + j);
+                char color = colorRule[ruleIndex];
+                int perpStart = perpendicularRule.getStartByColor(color);
+                int perpEnd = perpendicularRule.getEndByColor(color);
+
+                if (!perpendicularRule.containsColor(color)) {
+                    continueFlag = true;
+                }
+
+                if (perpStart > currIndex || perpEnd < currIndex) {
+                    //System.out.println(currIndex + " " + perpStart + " " + perpEnd);
+                    continueFlag = true;
+                }
+            }
+            if (continueFlag)
+                continue;
+
             indexes.add(i);
             int nextStart = i + numRule[ruleIndex];
             if (ruleIndex + 1 < numRule.length && colorRule[ruleIndex] == colorRule[ruleIndex + 1]) {
