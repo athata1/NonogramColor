@@ -12,6 +12,7 @@ public class RuleData {
     private int start;
     private int end;
     private HashMap<Character, int[]> instanceMap;
+
     private HashSet<Character> colorsInRow;
     public RuleData(String[] arr, int length, HashMap<Character, Color> map) {
         this.instanceMap = new HashMap<>();

@@ -95,6 +95,15 @@ public class NonogramColorSolver {
         return output;
     }
 
+    public void updateColorIndexes() {
+        for (RuleData rd: rowRules) {
+            rd.updateColorIndexes();
+        }
+        for (RuleData rd: colRules) {
+            rd.updateColorIndexes();
+        }
+    }
+
     private char[][] copyOfBoard(char[][] board) {
         char[][] out = new char[board.length][board[0].length];
         for (int r = 0; r < board.length; r++) {

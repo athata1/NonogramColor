@@ -111,7 +111,7 @@ public class NonogramProbabilityThread implements Runnable{
             return;
         }
 
-        if (ruleIndex == numRule.length)
+        if (rd.getStartIndex() > rd.getEndIndex())
             return;
 
         //Get total length of string
@@ -122,11 +122,14 @@ public class NonogramProbabilityThread implements Runnable{
                 length += 1;
         }
 
-        for (int i = arrIndex; i < arr.length - length + 1; i++) {
-
-
+        for (int i = arrIndex; i <= rd.getEnd() - length + 1; i++) {
             boolean continueFlag = false;
-            for (int j = 0; j < numRule[ruleIndex]; j++) {
+
+            for (int j = 0; j < numRule[ruleIndex] && !continueFlag; j++) {
+                if (arr[j + i] != '_' && arr[j + i] != colorRule[ruleIndex]) {
+                    continueFlag = true;
+                    break;
+                }
                 RuleData perpendicularRule = perpRules.get(i + j);
                 char color = colorRule[ruleIndex];
                 int perpStart = perpendicularRule.getStartByColor(color);
