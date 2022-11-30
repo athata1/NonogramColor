@@ -81,14 +81,14 @@ public class NonogramColorSolver {
     public char[][] solveNonogram() {
 
         runThroughFirstBoard();
-        //printCurrentBoard();
+        printCurrentBoard();
         while (true) {
             char[][] prev = copyOfBoard(output);
             updateRuleData();
             determineNonogram();
             if (prevEqualsBoard(prev))
                 break;
-            //printCurrentBoard();
+            printCurrentBoard();
         }
         return output;
     }
