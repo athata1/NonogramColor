@@ -81,16 +81,14 @@ public class NonogramColorSolver {
     public char[][] solveNonogram() {
 
         runThroughFirstBoard();
-        printCurrentBoard();
-        System.out.println();
+        //printCurrentBoard();
         while (true) {
             char[][] prev = copyOfBoard(output);
             updateRuleData();
             determineNonogram();
             if (prevEqualsBoard(prev))
                 break;
-            printCurrentBoard();
-            System.out.println();
+            //printCurrentBoard();
         }
         return output;
     }
@@ -135,11 +133,13 @@ public class NonogramColorSolver {
                 e.printStackTrace();
             }
             temp = npt.getArr();
+            //System.out.println(row + " " + Arrays.toString(temp));
             for (int j = 0; j < temp.length; j++) {
                 if (temp[j] != '_') {
                     output[row][j] = temp[j];
                 }
             }
+            //System.out.println(row);
         }
 
         //Col
@@ -163,6 +163,7 @@ public class NonogramColorSolver {
                     output[j][i] = temp[j];
                 }
             }
+            //System.out.println(i);
         }
     }
 
@@ -316,6 +317,7 @@ public class NonogramColorSolver {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
     /**

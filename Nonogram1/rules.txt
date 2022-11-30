@@ -1,33 +1,33 @@
 15
 15
-1 1 1 L L L
-2 1 1 1 2 2 1 L G L G B L G
-1 1 1 2 2 1 L G L B L G
-2 1 2 1 G G L G
-2 1 1 1 L L G G
-2 1 1 1 2 1 1 L G B L G L G
-1 1 1 2 L G L G
-2 1 2 1 1 L G L G G
-1 2 2 3 L G G G
-2 1 2 1 2 G L L G L
-1 1 1 2 1 L L G B G
-1 2 1 1 2 2 1 B L G G B L G
-1 1 1 1 2 L G G L G
-2 1 1 1 1 1 L G L G O G
-3 1 2 1 3 3 2 O G O G O G O
+3 B
+5 B
+1 2 3 B G B
+7 B
+3 2 4 B G B
+2 1 1 3 3 B G B L B
+2 2 1 1 1 1 3 B G B L B L B
+4 2 2 3 3 B G B L B
+2 1 8 B G B
+2 1 2 3 2 B G B L B
+4 1 1 1 1 1 B G L B L B
+3 1 3 B G L
+6 B
+5 B
+4 B
 
-2 2 1 1 L L B O
-4 2 1 1 L G L O
-1 1 1 3 1 1 1 L G G G L L O
-3 1 4 2 L G L G
-2 2 1 G G O
-1 2 1 B L O
-3 1 2 1 1 L L G L G
-1 1 2 1 1 2 1 G G L L G G O
-3 1 1 2 2 G L G B O
-2 1 2 2 1 B G G B O
-2 1 1 B L G
-1 1 3 1 1 2 L L G L L G
-3 3 1 1 1 1 1 L G G L L G G
-3 1 1 1 1 1 1 L G G G L G O
-2 1 1 G G O
+3 B
+5 B
+1 2 3 B G B
+7 B
+4 2 3 B G B
+2 1 1 3 3 B G B L B
+2 2 1 1 1 1 3 B G B L B L B
+4 2 2 3 3 B G B L B
+2 1 8 B G B
+2 1 1 1 3 2 B G B G L B
+4 1 1 1 1 1 B G L B L B
+4 3 B L
+6 B
+5 B
+4 B

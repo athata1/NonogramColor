@@ -123,7 +123,16 @@ public class NonogramProbabilityThread implements Runnable{
         }
 
         for (int i = arrIndex; i <= rd.getEnd() - length + 1; i++) {
+
+            //Check if num rule can start at this position
             boolean continueFlag = false;
+            if (i > 0 && arr[i - 1] == colorRule[ruleIndex]) {
+                continue;
+            }
+
+            if (i + numRule[ruleIndex] < arr.length && arr[i + numRule[ruleIndex]] == colorRule[ruleIndex]) {
+                continue;
+            }
 
             for (int j = 0; j < numRule[ruleIndex] && !continueFlag; j++) {
                 if (arr[j + i] != '_' && arr[j + i] != colorRule[ruleIndex]) {
