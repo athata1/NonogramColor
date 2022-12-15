@@ -74,6 +74,22 @@ public class NonogramColorSolver {
         }
     }
 
+    public char[][] getBoard() {
+        return output;
+    }
+
+    public HashMap<Character, Color> getColorMap() {
+        return charMap;
+    }
+
+    public ArrayList<RuleData> getRowRules() {
+        return rowRules;
+    }
+
+    public ArrayList<RuleData> getColRules() {
+        return colRules;
+    }
+
     /**
      * This function will solve the nonogram as much as statistically possible
      * @return the board will return with as many values as it can
@@ -420,6 +436,9 @@ public class NonogramColorSolver {
             }
 
             for (int i = 0; i < start.length; i++) {
+                for (int j = start[i]; j <= end[i]; j++) {
+                    temp1[j] = '.';
+                }
                 int val = (end[i] - start[i] + 1) - numRule[i];
                 if (val > numRule[i])
                     continue;
@@ -432,6 +451,12 @@ public class NonogramColorSolver {
                     output[r][index++] = colorRule[i];
                 }
             }
+
+            for (int i = 0; i < temp1.length; i++) {
+                if (temp1[i] != '.') {
+                    output[r][i] = 'X';
+                }
+            }
         }
 
         for (int c = 0; c < output[0].length; c++) {
@@ -441,6 +466,8 @@ public class NonogramColorSolver {
 
             int[] start = new int[numRule.length];
             int[] end = new int[numRule.length];
+
+            int[] temp1 = new int[output.length];
 
             int index = 0;
             for (int i = 0; i < numRule.length; i++) {
@@ -460,6 +487,9 @@ public class NonogramColorSolver {
             }
 
             for (int i = 0; i < start.length; i++) {
+                for (int j = start[i]; j <= end[i]; j++) {
+                    temp1[j] = '.';
+                }
                 int val = (end[i] - start[i] + 1) - numRule[i];
                 if (val > numRule[i])
                     continue;
@@ -470,6 +500,12 @@ public class NonogramColorSolver {
                 }
                 for (int j = 0; j < numRule[i] - val; j++) {
                     output[index++][c] = colorRule[i];
+                }
+            }
+
+            for (int i = 0; i < temp1.length; i++) {
+                if (temp1[i] != '.') {
+                    output[i][c] = 'X';
                 }
             }
         }
