@@ -12,6 +12,7 @@ public class NonogramColorSolver {
     private ArrayList<RuleData> colRules;
     private char[][] output;
     private HashMap<Character, Color> charMap;
+    private boolean isSlow;
 
     /**
      *
@@ -20,7 +21,9 @@ public class NonogramColorSolver {
      * @param folderName location of where all data files are located
      */
 
-    public NonogramColorSolver(String folderName) {
+    public NonogramColorSolver(String folderName, boolean isSlow) {
+        this.isSlow = isSlow;
+
 
         //Get data for colors
         this.charMap = new HashMap<Character, Color>();
@@ -101,7 +104,15 @@ public class NonogramColorSolver {
         while (true) {
             char[][] prev = copyOfBoard(output);
             updateRuleData();
-            determineNonogram();
+            determineNonogram(0);
+            if (prevEqualsBoard(prev))
+                break;
+            printCurrentBoard();
+        }
+        while (true) {
+            char[][] prev = copyOfBoard(output);
+            updateRuleData();
+            determineNonogram(1);
             if (prevEqualsBoard(prev))
                 break;
             printCurrentBoard();
@@ -131,7 +142,7 @@ public class NonogramColorSolver {
     /**
      * This method utilizes the Nonogram Probability Thread to find more positions than the preprocessor can
      */
-    private void determineNonogram() {
+    private void determineNonogram(int n) {
 
         //Rows
         for (int row = 0; row < output.length; row++) {
@@ -139,7 +150,7 @@ public class NonogramColorSolver {
             for (int j = 0; j < temp.length; j++) {
                 temp[j] = output[row][j];
             }
-            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row);
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row, n);
             Thread th = new Thread(npt);
             th.start();
             try {
@@ -151,8 +162,14 @@ public class NonogramColorSolver {
             temp = npt.getArr();
             //System.out.println(row + " " + Arrays.toString(temp));
             for (int j = 0; j < temp.length; j++) {
-                if (temp[j] != '_') {
+                if (temp[j] != '_' && output[row][j] == '_') {
                     output[row][j] = temp[j];
+                    if (isSlow) {
+                        try {
+                            Thread.sleep(50);
+                        }
+                        catch (InterruptedException e) {}
+                    }
                 }
             }
             //System.out.println(row);
@@ -164,7 +181,7 @@ public class NonogramColorSolver {
             for (int j = 0; j < output.length; j++) {
                 temp[j] = output[j][i];
             }
-            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i);
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i, n);
             Thread th = new Thread(npt);
             th.start();
             try {
@@ -175,8 +192,14 @@ public class NonogramColorSolver {
             }
             temp = npt.getArr();
             for (int j = 0; j < temp.length; j++) {
-                if (temp[j] != '_') {
+                if (temp[j] != '_' && output[j][i] =='_') {
                     output[j][i] = temp[j];
+                    if (isSlow) {
+                        try {
+                            Thread.sleep(50);
+                        }
+                        catch (InterruptedException e) {}
+                    }
                 }
             }
             //System.out.println(i);

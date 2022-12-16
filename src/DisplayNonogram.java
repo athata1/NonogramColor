@@ -20,10 +20,12 @@ public class DisplayNonogram extends JPanel implements ActionListener {
     private int maxCol;
     private final int BOXSIZE = 10;
     private Timer tm = new Timer(10,this);
-    public DisplayNonogram(String fileName) {
+    private boolean isSlow;
+    public DisplayNonogram(String fileName, boolean isSlow) {
         setPreferredSize( new Dimension( 700, 700));
 
-        this.ncs = new NonogramColorSolver(fileName);
+        this.isSlow = isSlow;
+        this.ncs = new NonogramColorSolver(fileName, isSlow);
         this.board = ncs.getBoard();
         this.width = board[0].length;
         this.height = board.length;
@@ -185,7 +187,7 @@ public class DisplayNonogram extends JPanel implements ActionListener {
     }
 
     public static void main(String[] args) {
-        DisplayNonogram t = new DisplayNonogram("Nonogram4");
+        DisplayNonogram t = new DisplayNonogram("Nonogram3",true);
         JFrame jf = new JFrame();
         jf.setTitle("Nonogram");
         jf.setSize(1000,1000);

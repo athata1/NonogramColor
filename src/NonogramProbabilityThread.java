@@ -14,7 +14,9 @@ public class NonogramProbabilityThread implements Runnable{
     private int total;
     private ArrayList<RuleData> perpRules;
     private int currIndex;
-    public NonogramProbabilityThread(RuleData rd, char[] arr, HashMap<Character, Color> map, ArrayList<RuleData> rowRule, int currIndex) {
+    private int version;
+    public NonogramProbabilityThread(RuleData rd, char[] arr, HashMap<Character, Color> map, ArrayList<RuleData> rowRule, int currIndex, int version) {
+        this.version = version;
         this.currIndex = currIndex;
         this.rd = rd;
         this.arr = arr;
@@ -35,6 +37,147 @@ public class NonogramProbabilityThread implements Runnable{
         if (rd.getStart() > rd.getEnd())
             return;
 
+        if (version == 0)
+            determineProb2();
+        else if(version == 1)
+            determineProb();
+
+    }
+
+    private boolean found;
+    public void determineProb2() {
+        int[] numRules = rd.getNumRule();
+        char[] colorRules = rd.getColorRule();
+        int[][] bounds = new int[numRules.length][2];
+        found = false;
+        findUpperBound(bounds, 0, 0);
+        found = false;
+        findLowerBound(bounds, bounds.length - 1, arr.length - 1);
+
+        int[] xChecker = new int[arr.length];
+        for (int i = 0; i < bounds.length; i++) {
+            int diff = bounds[i][1] - bounds[i][0] + 1 - numRules[i];
+            for (int j = 0; j < numRules[i] - diff; j++) {
+                arr[bounds[i][0] + diff + j] = colorRules[i];
+            }
+            for (int j = bounds[i][0]; j <= bounds[i][1]; j++) {
+                xChecker[j] = 1;
+            }
+        }
+        for (int i = 0; i < xChecker.length; i++) {
+            if (xChecker[i] != 1) {
+                arr[i] = 'X';
+            }
+        }
+    }
+
+    public void findLowerBound(int[][] bounds, int index, int arrIndex) {
+        if (index == -1) {
+            found = true;
+            return;
+        }
+        int[] numRule = rd.getNumRule();
+        char[] colorRule = rd.getColorRule();
+        for (int i = arrIndex; i >= 0 && !found; i--) {
+
+            boolean continueFlag = false;
+            if (i + 1 < arr.length && arr[i + 1] == colorRule[index]) {
+                continue;
+            }
+
+            if (i - numRule[index] >= 0 && arr[i - numRule[index]] == colorRule[index]) {
+                continue;
+            }
+            for (int j = 0; j < numRule[index]; j++) {
+                if (arr[i - j] != '_' && arr[i - j] != colorRule[index]) {
+                    continueFlag = true;
+                    break;
+                }
+
+                RuleData perpendicularRule = perpRules.get(i - j);
+                char color = colorRule[index];
+                int perpStart = perpendicularRule.getStartByColor(color);
+                int perpEnd = perpendicularRule.getEndByColor(color);
+
+                if (!perpendicularRule.containsColor(color)) {
+                    continueFlag = true;
+                }
+
+                if (perpStart > currIndex || perpEnd < currIndex) {
+                    //System.out.println(currIndex + " " + perpStart + " " + perpEnd);
+                    continueFlag = true;
+                }
+            }
+            if (continueFlag)
+                continue;
+
+            bounds[index][1] = i;
+            findLowerBound(bounds, index - 1, arrIndex - numRule[index] - ((index - 1 >= 0 && colorRule[index] == colorRule[index - 1]) ? 1 : 0));
+            if (!found)
+                bounds[index][1] = 0;
+        }
+    }
+
+    public void findUpperBound(int[][] bounds, int index, int arrIndex) {
+        if (index == bounds.length) {
+            found = true;
+            return;
+        }
+        if (found)
+            return;
+
+        int[] numRule = rd.getNumRule();
+        char[] colorRule = rd.getColorRule();
+
+        int length = numRule[index];
+        for (int i = index + 1; i < numRule.length; i++) {
+            length += numRule[i];
+            if (colorRule[i] == colorRule[i - 1])
+                length += 1;
+        }
+
+        for (int i = arrIndex; i < arr.length - length + 1 && !found; i++) {
+
+            boolean continueFlag = false;
+
+            if (i > 0 && arr[i - 1] == colorRule[index]) {
+                continue;
+            }
+
+            if (i + numRule[index] < arr.length && arr[i + numRule[index]] == colorRule[index]) {
+                continue;
+            }
+            for (int j = 0; j < numRule[index] && !continueFlag; j++) {
+                if (arr[j + i] != '_' && arr[j + i] != colorRule[index]) {
+                    continueFlag = true;
+                    break;
+                }
+                RuleData perpendicularRule = perpRules.get(i + j);
+                char color = colorRule[index];
+                int perpStart = perpendicularRule.getStartByColor(color);
+                int perpEnd = perpendicularRule.getEndByColor(color);
+
+                if (!perpendicularRule.containsColor(color)) {
+                    continueFlag = true;
+                }
+
+                if (perpStart > currIndex || perpEnd < currIndex) {
+                    //System.out.println(currIndex + " " + perpStart + " " + perpEnd);
+                    continueFlag = true;
+                }
+            }
+
+            if (continueFlag)
+                continue;
+
+            bounds[index][0] = i;
+            findUpperBound(bounds, index + 1, arrIndex + numRule[index] + ((index + 1 < numRule.length && colorRule[index] == colorRule[index + 1]) ? 1 : 0));
+            if (!found)
+                bounds[index][0] = 0;
+        }
+    }
+
+    public void determineProb() {
         findProb(rd.getStartIndex(), rd.getStart(), new ArrayList<Integer>());
         int start = rd.getStart();
         int end = rd.getEnd();
@@ -60,7 +203,6 @@ public class NonogramProbabilityThread implements Runnable{
                 arr[i] = 'X';
             }
         }
-
     }
 
     public void findProb(int ruleIndex, int arrIndex, ArrayList<Integer> indexes) {
