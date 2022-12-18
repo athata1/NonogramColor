@@ -18,7 +18,7 @@ public class DisplayNonogram extends JPanel implements ActionListener {
     private ArrayList<RuleData> rowRules;
     private int maxRow;
     private int maxCol;
-    private final int BOXSIZE = 10;
+    private final int BOXSIZE = 3;
     private Timer tm = new Timer(10,this);
     private boolean isSlow;
     public DisplayNonogram(String fileName, boolean isSlow) {
@@ -187,7 +187,7 @@ public class DisplayNonogram extends JPanel implements ActionListener {
     }
 
     public static void main(String[] args) {
-        DisplayNonogram t = new DisplayNonogram("Nonogram4",true);
+        DisplayNonogram t = new DisplayNonogram("Nonogram5",false);
         JFrame jf = new JFrame();
         jf.setTitle("Nonogram");
         jf.setSize(1000,1000);

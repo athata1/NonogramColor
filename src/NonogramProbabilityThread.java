@@ -113,11 +113,9 @@ public class NonogramProbabilityThread implements Runnable{
                 continue;
             }
 
-            if (i - numRule[index] >= 0 && arr[i - numRule[index]] == colorRule[index]) {
-                continue;
-            }
-            for (int j = 0; j < numRule[index]; j++) {
+            for (int j = 0; j < numRule[index] && !continueFlag; j++) {
                 if (arr[i - j] != '_' && arr[i - j] != colorRule[index]) {
+                    i -= j;
                     continueFlag = true;
                     break;
                 }
@@ -138,6 +136,10 @@ public class NonogramProbabilityThread implements Runnable{
             }
             if (continueFlag)
                 continue;
+
+            if (i - numRule[index] >= 0 && arr[i - numRule[index]] == colorRule[index]) {
+                continue;
+            }
 
             bounds[index][1] = i;
             findLowerBound(bounds, index - 1, i - numRule[index] - ((index - 1 >= 0 && colorRule[index] == colorRule[index - 1]) ? 1 : 0));
@@ -188,11 +190,9 @@ public class NonogramProbabilityThread implements Runnable{
                 continue;
             }
 
-            if (i + numRule[index] < arr.length && arr[i + numRule[index]] == colorRule[index]) {
-                continue;
-            }
-            for (int j = 0; j < numRule[index]; j++) {
+            for (int j = 0; j < numRule[index] && !continueFlag; j++) {
                 if (arr[i + j] != '_' && arr[i + j] != colorRule[index]) {
+                    i += j;
                     continueFlag = true;
                     break;
                 }
@@ -209,9 +209,13 @@ public class NonogramProbabilityThread implements Runnable{
                     continueFlag = true;
                 }
             }
-
             if (continueFlag)
                 continue;
+
+            if (i + numRule[index] < arr.length && arr[i + numRule[index]] == colorRule[index]) {
+                i += numRule[index] - 1;
+                continue;
+            }
 
             bounds[index][0] = i;
 

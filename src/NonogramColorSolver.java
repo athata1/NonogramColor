@@ -140,18 +140,15 @@ public class NonogramColorSolver {
         return out;
     }
 
-    /**
-     * This method utilizes the Nonogram Probability Thread to find more positions than the preprocessor can
-     */
-    private void determineNonogram(int n) {
 
+    private void doRows(int version) {
         //Rows
         for (int row = 0; row < output.length; row++) {
             char[] temp = new char[output[0].length];
             for (int j = 0; j < temp.length; j++) {
                 temp[j] = output[row][j];
             }
-            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row, n);
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row, version);
             Thread th = new Thread(npt);
             th.start();
             try {
@@ -173,16 +170,18 @@ public class NonogramColorSolver {
                     }
                 }
             }
-            //System.out.println(row);
+            System.out.println(row);
         }
+    }
 
+    private void doCols(int version) {
         //Col
         for (int i = 0; i < output[0].length; i++) {
             char[] temp = new char[output.length];
             for (int j = 0; j < output.length; j++) {
                 temp[j] = output[j][i];
             }
-            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i, n);
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i, version);
             Thread th = new Thread(npt);
             th.start();
             try {
@@ -203,8 +202,16 @@ public class NonogramColorSolver {
                     }
                 }
             }
-            //System.out.println(i);
+            System.out.println(i);
         }
+    }
+
+    /**
+     * This method utilizes the Nonogram Probability Thread to find more positions than the preprocessor can
+     */
+    private void determineNonogram(int n) {
+        doCols(n);
+        doRows(n);
     }
 
     /**
@@ -343,7 +350,7 @@ public class NonogramColorSolver {
      */
     private void runThroughFirstBoard() {
         runRule1();
-        runRule2();
+        //runRule2();
         runRule3();
     }
 

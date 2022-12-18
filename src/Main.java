@@ -12,7 +12,7 @@ public class Main {
         }
         System.out.println((double)sum/total);*/
 
-        NonogramColorSolver n = new NonogramColorSolver("Nonogram1");
+        NonogramColorSolver n = new NonogramColorSolver("Nonogram4", false);
         n.solveNonogram();
         n.printCurrentBoard();
     }
