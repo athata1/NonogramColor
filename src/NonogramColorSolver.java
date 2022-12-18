@@ -109,15 +109,15 @@ public class NonogramColorSolver {
                 break;
             printCurrentBoard();
         }
-
-        /*while (true) {
+        System.out.println("Phase 2");
+        while (true) {
             char[][] prev = copyOfBoard(output);
             updateRuleData();
             determineNonogram(1);
             if (prevEqualsBoard(prev))
                 break;
             printCurrentBoard();
-        }*/
+        }
         return output;
     }
 
