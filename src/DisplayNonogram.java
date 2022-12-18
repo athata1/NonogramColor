@@ -187,7 +187,7 @@ public class DisplayNonogram extends JPanel implements ActionListener {
     }
 
     public static void main(String[] args) {
-        DisplayNonogram t = new DisplayNonogram("Nonogram5",false);
+        DisplayNonogram t = new DisplayNonogram("Nonogram4",true);
         JFrame jf = new JFrame();
         jf.setTitle("Nonogram");
         jf.setSize(1000,1000);

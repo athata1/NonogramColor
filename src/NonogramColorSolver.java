@@ -210,8 +210,8 @@ public class NonogramColorSolver {
      * This method utilizes the Nonogram Probability Thread to find more positions than the preprocessor can
      */
     private void determineNonogram(int n) {
-        doCols(n);
         doRows(n);
+        doCols(n);
     }
 
     /**
@@ -350,7 +350,7 @@ public class NonogramColorSolver {
      */
     private void runThroughFirstBoard() {
         runRule1();
-        //runRule2();
+        runRule2();
         runRule3();
     }
 

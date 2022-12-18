@@ -213,7 +213,6 @@ public class NonogramProbabilityThread implements Runnable{
                 continue;
 
             if (i + numRule[index] < arr.length && arr[i + numRule[index]] == colorRule[index]) {
-                i += numRule[index] - 1;
                 continue;
             }
 
