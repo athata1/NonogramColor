@@ -72,13 +72,41 @@ public class NonogramProbabilityThread implements Runnable{
     }
 
     public void findLowerBound(int[][] bounds, int index, int arrIndex) {
+        int[] numRule = rd.getNumRule();
+        char[] colorRule = rd.getColorRule();
         if (index == -1) {
+            char[] temp = new char[arr.length];
+            Arrays.fill(temp, 'X');
+            for (int i = 0; i < bounds.length; i++) {
+                for (int j = 0; j < numRule[i]; j++) {
+                    temp[bounds[i][1] - j] = colorRule[i];
+                }
+            }
+
+            for (int i = 0; i < temp.length; i++) {
+                if (arr[i] == '_')
+                    continue;
+                if (arr[i] == temp[i])
+                    continue;
+                else
+                    return;
+            }
             found = true;
             return;
         }
-        int[] numRule = rd.getNumRule();
-        char[] colorRule = rd.getColorRule();
-        for (int i = arrIndex; i >= 0 && !found; i--) {
+
+        if (found)
+            return;
+
+
+        int length = numRule[index];
+        for (int i = index - 1; i >= 0; i--) {
+            length += numRule[i];
+            if (colorRule[i] == colorRule[i + 1])
+                length += 1;
+        }
+
+        for (int i = arrIndex; i >= length - 1 && !found; i--) {
 
             boolean continueFlag = false;
             if (i + 1 < arr.length && arr[i + 1] == colorRule[index]) {
@@ -113,21 +141,38 @@ public class NonogramProbabilityThread implements Runnable{
 
             bounds[index][1] = i;
             findLowerBound(bounds, index - 1, arrIndex - numRule[index] - ((index - 1 >= 0 && colorRule[index] == colorRule[index - 1]) ? 1 : 0));
-            if (!found)
-                bounds[index][1] = 0;
+            if (found)
+                break;
+            bounds[index][1] = 0;
         }
     }
 
     public void findUpperBound(int[][] bounds, int index, int arrIndex) {
+        int[] numRule = rd.getNumRule();
+        char[] colorRule = rd.getColorRule();
         if (index == bounds.length) {
+            char[] temp = new char[arr.length];
+            Arrays.fill(temp, 'X');
+            for (int i = 0; i < bounds.length; i++) {
+                for (int j = 0;j < numRule[i]; j++) {
+                    temp[j + bounds[i][0]] = colorRule[i];
+                }
+            }
+
+            for (int i = 0; i < temp.length; i++) {
+                if (arr[i] == '_')
+                    continue;
+                if (arr[i] == temp[i])
+                    continue;
+                else
+                    return;
+            }
+
             found = true;
             return;
         }
         if (found)
             return;
-
-        int[] numRule = rd.getNumRule();
-        char[] colorRule = rd.getColorRule();
 
         int length = numRule[index];
         for (int i = index + 1; i < numRule.length; i++) {
@@ -139,7 +184,6 @@ public class NonogramProbabilityThread implements Runnable{
         for (int i = arrIndex; i < arr.length - length + 1 && !found; i++) {
 
             boolean continueFlag = false;
-
             if (i > 0 && arr[i - 1] == colorRule[index]) {
                 continue;
             }
@@ -172,8 +216,9 @@ public class NonogramProbabilityThread implements Runnable{
 
             bounds[index][0] = i;
             findUpperBound(bounds, index + 1, arrIndex + numRule[index] + ((index + 1 < numRule.length && colorRule[index] == colorRule[index + 1]) ? 1 : 0));
-            if (!found)
-                bounds[index][0] = 0;
+            if (found)
+                break;
+            bounds[index][0] = 0;
         }
     }
 

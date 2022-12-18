@@ -13,7 +13,7 @@ public class TheoryTest {
         char[] arr = new char[20];
         Arrays.fill(arr, '_');
         RuleData rd = new RuleData(rules, arr.length, map);
-        NonogramProbabilityThread th = new NonogramProbabilityThread(rd, arr, map, null, -1);
+        NonogramProbabilityThread th = new NonogramProbabilityThread(rd, arr, map, null, -1, 0);
         Thread t = new Thread(th);
         t.start();
 
