@@ -432,130 +432,75 @@ public class NonogramColorSolver {
      * and find locations where values are meant to exist
      */
     private void runRule2() {
-
-        char[][] temp = new char[output.length][output[0].length];
-
-        for (int i = 0 ; i < temp.length; i++) {
-            Arrays.fill(temp[i], ' ');
+        for (int row = 0; row < output.length; row++) {
+            char[] temp = new char[output[0].length];
+            Arrays.fill(temp, '_');
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row, 0);
+            Thread th = new Thread(npt);
+            th.start();
+            try {
+                th.join();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            temp = npt.getArr();
+            //System.out.println(row + " " + Arrays.toString(temp));
+            for (int j = 0; j < temp.length; j++) {
+                if (temp[j] != '_' && output[row][j] == '_') {
+                    output[row][j] = temp[j];
+                    if (isSlow) {
+                        try {
+                            Thread.sleep(50);
+                        }
+                        catch (InterruptedException e) {}
+                    }
+                }
+            }
+            System.out.println(row);
         }
 
-        for (int r = 0; r < output.length; r++) {
-            RuleData rd = rowRules.get(r);
-            int[] numRule = rd.getNumRule();
-            char[] colorRule = rd.getColorRule();
-
-            char[] temp1 = new char[output[0].length];
-
-            int[] start = new int[numRule.length];
-            int[] end = new int[numRule.length];
-
-            int index = 0;
-            for (int i = 0; i < numRule.length; i++) {
-                start[i] = index;
-                index += numRule[i];
-                if (i + 1 < numRule.length && colorRule[i] == colorRule[i + 1]) {
-                    i++;
+        for (int i = 0; i < output[0].length; i++) {
+            char[] temp = new char[output.length];
+            Arrays.fill(temp, '_');
+            NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i, 0);
+            Thread th = new Thread(npt);
+            th.start();
+            try {
+                th.join();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            temp = npt.getArr();
+            for (int j = 0; j < temp.length; j++) {
+                if (temp[j] != '_' && output[j][i] =='_') {
+                    output[j][i] = temp[j];
+                    if (isSlow) {
+                        try {
+                            Thread.sleep(50);
+                        }
+                        catch (InterruptedException e) {}
+                    }
                 }
             }
-
-            index = output[0].length - 1;
-            for (int i = numRule.length - 1; i >= 0; i--) {
-                end[i] = index;
-                index -= numRule[i];
-                if (i > 0 && colorRule[i] == colorRule[i - 1])
-                    index--;
-            }
-
-            for (int i = 0; i < start.length; i++) {
-                for (int j = start[i]; j <= end[i]; j++) {
-                    temp1[j] = '.';
-                }
-                int val = (end[i] - start[i] + 1) - numRule[i];
-                if (val > numRule[i])
-                    continue;
-
-                index = start[i];
-                for (int j = 0; j < val; j++) {
-                    index++;
-                }
-                for (int j = 0; j < numRule[i] - val; j++) {
-                    output[r][index++] = colorRule[i];
-                }
-            }
-
-            for (int i = 0; i < temp1.length; i++) {
-                if (temp1[i] != '.') {
-                    output[r][i] = 'X';
-                }
-            }
-        }
-
-        for (int c = 0; c < output[0].length; c++) {
-            RuleData rd = colRules.get(c);
-            int[] numRule = rd.getNumRule();
-            char[] colorRule = rd.getColorRule();
-
-            int[] start = new int[numRule.length];
-            int[] end = new int[numRule.length];
-
-            int[] temp1 = new int[output.length];
-
-            int index = 0;
-            for (int i = 0; i < numRule.length; i++) {
-                start[i] = index;
-                index += numRule[i];
-                if (i + 1 < numRule.length && colorRule[i] == colorRule[i + 1]) {
-                    i++;
-                }
-            }
-
-            index = output.length - 1;
-            for (int i = numRule.length - 1; i >= 0; i--) {
-                end[i] = index;
-                index -= numRule[i];
-                if (i > 0 && colorRule[i] == colorRule[i - 1])
-                    index--;
-            }
-
-            for (int i = 0; i < start.length; i++) {
-                for (int j = start[i]; j <= end[i]; j++) {
-                    temp1[j] = '.';
-                }
-                int val = (end[i] - start[i] + 1) - numRule[i];
-                if (val > numRule[i])
-                    continue;
-
-                index = start[i];
-                for (int j = 0; j < val; j++) {
-                    index++;
-                }
-                for (int j = 0; j < numRule[i] - val; j++) {
-                    output[index++][c] = colorRule[i];
-                }
-            }
-
-            for (int i = 0; i < temp1.length; i++) {
-                if (temp1[i] != '.') {
-                    output[i][c] = 'X';
-                }
-            }
+            System.out.println(i);
         }
     }
 
     public void runRule3() {
         for (int r = 0; r < output.length; r++) {
-            if (output[r][0] != '_') {
-                RuleData rd = rowRules.get(r);
-                int numData = rd.getNumRule()[0];
-                char color = rd.getColorRule()[0];
+            RuleData rd = rowRules.get(r);
+            int numData = rd.getNumRule()[0];
+            char color = rd.getColorRule()[0];
+            if (output[r][0] == color) {
                 for (int c = 0; c < numData; c++) {
                     output[r][c] = color;
                 }
             }
-            if (output[r][output[0].length - 1] != '_') {
-                RuleData rd = rowRules.get(r);
-                int numData = rd.getNumRule()[rd.getNumRule().length - 1];
-                char color = rd.getColorRule()[rd.getColorRule().length - 1];
+            numData = rd.getNumRule()[rd.getNumRule().length - 1];
+            color = rd.getColorRule()[rd.getColorRule().length - 1];
+            if (output[r][output[0].length - 1] == color) {
                 for (int c = 0; c < numData; c++) {
                     output[r][output[0].length - 1 - c] = color;
                 }
@@ -563,18 +508,17 @@ public class NonogramColorSolver {
         }
 
         for (int c = 0; c < output[0].length; c++) {
-            if (output[0][c] != '_') {
-                RuleData rd = colRules.get(c);
-                int numData = rd.getNumRule()[0];
-                char color = rd.getColorRule()[0];
+            RuleData rd = colRules.get(c);
+            int numData = rd.getNumRule()[0];
+            char color = rd.getColorRule()[0];
+            if (output[0][c] == color) {
                 for (int r = 0; r < numData; r++) {
                     output[r][c] = color;
                 }
             }
-            if (output[output.length - 1][c] != '_') {
-                RuleData rd = colRules.get(c);
-                int numData = rd.getNumRule()[rd.getNumRule().length - 1];
-                char color = rd.getColorRule()[rd.getColorRule().length - 1];
+            numData = rd.getNumRule()[rd.getNumRule().length - 1];
+            color = rd.getColorRule()[rd.getColorRule().length - 1];
+            if (output[output.length - 1][c] == color) {
                 for (int r = 0; r < numData; r++) {
                     output[output.length - 1 - r][c] = color;
                 }
