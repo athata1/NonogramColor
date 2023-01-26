@@ -206,12 +206,84 @@ public class NonogramColorSolver {
         }
     }
 
+    public void doCol(int i, int version) {
+        char[] temp = new char[output.length];
+        for (int j = 0; j < output.length; j++) {
+            temp[j] = output[j][i];
+        }
+        NonogramProbabilityThread npt = new NonogramProbabilityThread(colRules.get(i), temp, charMap, rowRules, i, version);
+        Thread th = new Thread(npt);
+        th.start();
+        try {
+            th.join();
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        temp = npt.getArr();
+        for (int j = 0; j < temp.length; j++) {
+            if (temp[j] != '_' && output[j][i] =='_') {
+                output[j][i] = temp[j];
+                if (isSlow) {
+                    try {
+                        Thread.sleep(50);
+                    }
+                    catch (InterruptedException e) {}
+                }
+            }
+        }
+        System.out.println(i + " Col");
+    }
+    public void doRow(int row, int version) {
+        char[] temp = new char[output[0].length];
+        for (int j = 0; j < temp.length; j++) {
+            temp[j] = output[row][j];
+        }
+        NonogramProbabilityThread npt = new NonogramProbabilityThread(rowRules.get(row), temp, charMap, colRules, row, version);
+        Thread th = new Thread(npt);
+        th.start();
+        try {
+            th.join();
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        temp = npt.getArr();
+        //System.out.println(row + " " + Arrays.toString(temp));
+        for (int j = 0; j < temp.length; j++) {
+            if (temp[j] != '_' && output[row][j] == '_') {
+                output[row][j] = temp[j];
+                if (isSlow) {
+                    try {
+                        Thread.sleep(50);
+                    }
+                    catch (InterruptedException e) {}
+                }
+            }
+        }
+        System.out.println(row + " Row");
+    }
+
     /**
      * This method utilizes the Nonogram Probability Thread to find more positions than the preprocessor can
      */
     private void determineNonogram(int n) {
-        doRows(n);
-        doCols(n);
+        int i = 0;
+        int j = 0;
+        while (i < rowRules.size() && j < colRules.size()) {
+            doRow(i, 0);
+            doCol(j, 0);
+            i++;
+            j++;
+        }
+
+        while (i < rowRules.size()) {
+            doRow(i++,0);
+        }
+
+        while (j < colRules.size()) {
+            doCol(j++, 0);
+        }
     }
 
     /**

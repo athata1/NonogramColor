@@ -54,17 +54,17 @@ public class NonogramProbabilityThread implements Runnable{
         char[] colorRules = rd.getColorRule();
         int[][] bounds = new int[numRules.length][2];
         found = false;
-        findUpperBound(bounds, 0, 0);
+        findUpperBound(bounds, rd.getStartIndex(), rd.getStart());
         if (ignore) {
             return;
         }
         found = false;
-        findLowerBound(bounds, bounds.length - 1, arr.length - 1);
+        findLowerBound(bounds, rd.getEndIndex(), rd.getEnd());
         if (ignore)
             return;
 
         int[] xChecker = new int[arr.length];
-        for (int i = 0; i < bounds.length; i++) {
+        for (int i = rd.getStartIndex(); i <= rd.getEndIndex(); i++) {
             int diff = bounds[i][1] - bounds[i][0] + 1 - numRules[i];
             for (int j = 0; j < numRules[i] - diff; j++) {
                 arr[bounds[i][0] + diff + j] = colorRules[i];
@@ -81,7 +81,7 @@ public class NonogramProbabilityThread implements Runnable{
     }
 
     public void findLowerBound(int[][] bounds, int index, int arrIndex) {
-        if (System.currentTimeMillis() - start > 15_000) {
+        if (System.currentTimeMillis() - start > 5_000) {
             ignore = true;
             System.out.println("Ignored");
             return;
@@ -89,16 +89,16 @@ public class NonogramProbabilityThread implements Runnable{
 
         int[] numRule = rd.getNumRule();
         char[] colorRule = rd.getColorRule();
-        if (index == -1) {
+        if (index < rd.getStartIndex()) {
             char[] temp = new char[arr.length];
             Arrays.fill(temp, 'X');
-            for (int i = 0; i < bounds.length; i++) {
+            for (int i = rd.getStartIndex(); i <= rd.getEndIndex(); i++) {
                 for (int j = 0; j < numRule[i]; j++) {
                     temp[bounds[i][1] - j] = colorRule[i];
                 }
             }
 
-            for (int i = 0; i < temp.length; i++) {
+            for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
                 if (arr[i] == '_')
                     continue;
                 if (arr[i] == temp[i])
@@ -115,16 +115,16 @@ public class NonogramProbabilityThread implements Runnable{
 
 
         int length = numRule[index];
-        for (int i = index - 1; i >= 0; i--) {
+        for (int i = index - 1; i >= rd.getStartIndex(); i--) {
             length += numRule[i];
             if (colorRule[i] == colorRule[i + 1])
                 length += 1;
         }
 
-        for (int i = arrIndex; i >= length - 1 && !found && !ignore; i--) {
+        for (int i = arrIndex; i >= rd.getStart() + length - 1 && !found && !ignore; i--) {
 
             boolean continueFlag = false;
-            if (i + 1 < arr.length && arr[i + 1] == colorRule[index]) {
+            if (i + 1 < rd.getEnd() + 1 && arr[i + 1] == colorRule[index]) {
                 continue;
             }
 
@@ -152,7 +152,7 @@ public class NonogramProbabilityThread implements Runnable{
             if (continueFlag)
                 continue;
 
-            if (i - numRule[index] >= 0 && arr[i - numRule[index]] == colorRule[index]) {
+            if (i - numRule[index] >= rd.getStart() && arr[i - numRule[index]] == colorRule[index]) {
                 continue;
             }
 
@@ -165,23 +165,23 @@ public class NonogramProbabilityThread implements Runnable{
     }
 
     public void findUpperBound(int[][] bounds, int index, int arrIndex) {
-        if (System.currentTimeMillis() - start > 15_000) {
+        if (System.currentTimeMillis() - start > 5_000) {
             ignore = true;
             System.out.println("Ignored");
             return;
         }
         int[] numRule = rd.getNumRule();
         char[] colorRule = rd.getColorRule();
-        if (index == bounds.length) {
+        if (index > rd.getEndIndex()) {
             char[] temp = new char[arr.length];
             Arrays.fill(temp, 'X');
-            for (int i = 0; i < bounds.length; i++) {
+            for (int i = rd.getStartIndex(); i <= rd.getEndIndex(); i++) {
                 for (int j = 0; j < numRule[i]; j++) {
                     temp[bounds[i][0] + j] = colorRule[i];
                 }
             }
 
-            for (int i = 0; i < temp.length; i++) {
+            for (int i = rd.getStart(); i <= rd.getEnd(); i++) {
                 if (arr[i] == '_')
                     continue;
                 if (arr[i] == temp[i])
@@ -197,16 +197,16 @@ public class NonogramProbabilityThread implements Runnable{
             return;
 
         int length = numRule[index];
-        for (int i = index + 1; i < numRule.length; i++) {
+        for (int i = index + 1; i <= rd.getEndIndex(); i++) {
             length += numRule[i];
             if (colorRule[i] == colorRule[i - 1])
                 length += 1;
         }
 
-        for (int i = arrIndex; i < arr.length - length + 1 && !found && !ignore; i++) {
+        for (int i = arrIndex; i < rd.getEnd() + 1 - length + 1 && !found && !ignore; i++) {
 
             boolean continueFlag = false;
-            if (i - 1 >= 0 && arr[i - 1] == colorRule[index]) {
+            if (i - 1 >= rd.getStart() && arr[i - 1] == colorRule[index]) {
                 continue;
             }
 
@@ -232,7 +232,7 @@ public class NonogramProbabilityThread implements Runnable{
             if (continueFlag)
                 continue;
 
-            if (i + numRule[index] < arr.length && arr[i + numRule[index]] == colorRule[index]) {
+            if (i + numRule[index] < rd.getEnd() + 1 && arr[i + numRule[index]] == colorRule[index]) {
                 continue;
             }
 

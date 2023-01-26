@@ -4,12 +4,14 @@ import java.util.HashMap;
 
 public class TheoryTest {
     public static void main(String[] args) throws Exception{
-        String[] rules = "1 1 1 1 1 2 1 5 1 2 1 A C A A A E J E J E A".split(" ");
+        String[] rules = "4 1 1 1 1 1 3 1 2 J A E B E J I H J\n".split(" ");
         HashMap<Character, Color> map = new HashMap<Character, Color>();
         map.put('A', new Color(0,0,0));
-        map.put('E', new Color(2,4,6));
-        map.put('C', new Color(123, 234, 145));
+        map.put('B', new Color(2,4,6));
+        map.put('E', new Color(123, 234, 145));
         map.put('J', null);
+        map.put('I', null);
+        map.put('H', null);
         char[] arr = new char[20];
         Arrays.fill(arr, '_');
         RuleData rd = new RuleData(rules, arr.length, map);
